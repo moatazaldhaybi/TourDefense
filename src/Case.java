@@ -1,9 +1,9 @@
 public class Case {
   private String type;
-  private Position position;
+  private PositionCase position;
   private boolean occupe;
 
-  public Case(String type, Position position, boolean occupe) {
+  public Case(String type, PositionCase position, boolean occupe) {
     this.type = type;
     this.position = position;
     this.occupe = occupe;
@@ -13,7 +13,7 @@ public class Case {
     return type;
   }
 
-  public Position getPosition() {
+  public PositionCase getPosition() {
     return position;
   }
 
@@ -25,7 +25,7 @@ public class Case {
     this.type = type;
   }
 
-  public void setPosition(Position position) {
+  public void setPosition(PositionCase position) {
     this.position = position;
   }
 
@@ -33,5 +33,13 @@ public class Case {
     this.occupe = occupe;
   }
 
-  
+  @Override
+  public String toString() {
+      return "Case{" +
+            "type='" + type + '\'' +
+            ", position=" + position +
+            ", occupe=" + occupe +
+            '}';
+  }
+
 }

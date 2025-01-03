@@ -1,27 +1,25 @@
 import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public abstract class Ennemis extends Unite {
-    
-    private double deltaTime;
-    private String name;       
+      
     private double speed;     
-    private int reward;       
+    private int reward;
+    private double distanceParcourue;       
   
-    public Ennemis(String name, int maxPv, int atk, double atkSpeed, int range, Position position, Element element, double speed, int reward, Color color, double deltaTime){
+    public Ennemis(String name, int maxPv, int atk, double atkSpeed, int range, Position position, Element element, double speed, int reward, Color color){
 
-      super(maxPv, atk, atkSpeed, range, element, position, color);
-      this.deltaTime=deltaTime;
-      this.name=name;
+      super(name,maxPv, atk, atkSpeed, range, element, position, color);
       this.speed = speed;
       this.reward = reward;
+      this.distanceParcourue=0;
 
     }
 
-    public String getName() {
-      return name;
+    public String getName(){
+        return super.getName();
     }
 
     public double getSpeed() {
@@ -32,20 +30,18 @@ public abstract class Ennemis extends Unite {
       return reward;
     }
 
-    public void avancer(List<Case> chemin) {
-      if (chemin == null || chemin.isEmpty()) {
-          throw new IllegalArgumentException("Le chemin est invalide ou vide !");
-      }
-  
-      // Si l'ennemi est déjà arrivé à la dernière case
-      if (chemin.get(chemin.size() - 1).getPosition().equals(super.getPosition())) {
-          return; // L'ennemi a atteint la base
-      }
-
-      
-
-      
+    public Position getPosition(){
+        return super.getPosition();
     }
+
+    public void setPosition(Position position ){
+        super.setPosition(position);
+    }
+
+    public void setPosition1(PositionCase position ){
+        super.getPosition();
+    }
+    
   
   // Méthode pour trouver la case actuelle de l'ennemi
   private Case trouverCaseActuelle(List<Case> chemin) {
@@ -117,22 +113,108 @@ public abstract class Ennemis extends Unite {
 
         return tourLaPlusProche;
     }
-    public Ennemis trouverEnnemiLePlusAvance(List<Ennemis> ennemisDansPortee) {
-        Ennemis ennemiAvance = null;
-        double maxDistanceParcourue = -Double.MAX_VALUE;
 
-        for (Ennemis ennemi : ennemisDansPortee) {
-            double distanceParcourue = calculerDistanceParcourue(ennemi);
-            if (distanceParcourue > maxDistanceParcourue) {
-                maxDistanceParcourue = distanceParcourue;
-                ennemiAvance = ennemi;
+    /*public void avancer(double deltaTime, List<Case> chemin, double vitesse){
+        for(int i=0; i<chemin.size()-1; i++){
+            PositionCase current = chemin.get(i).getPosition();
+            PositionCase prochain = chemin.get(i+1).getPosition();
+            double distanceTotal = current.distanceTo(prochain);
+            if(current.getRow()==prochain.getRow()){
+                double x = this.getPosition().getX();
+                for(double j=0;j<distanceTotal;j+=deltaTime){
+                    if(current.getCol()<prochain.getCol()){
+                        x+=vitesse*deltaTime;
+                    }
+                    else{
+                        x-=vitesse*deltaTime;                 
+                    }
+                    this.getPosition().setX(x);
+                }
+            }
+            else{
+                double y = this.getPosition().getY();
+                while (Math.abs(y - 481.25) > 0.01) {
+
+                    for(double j=0;j<1;j+=deltaTime){
+                        if(current.getRow()<prochain.getRow()){
+                            
+                            y-=vitesse*deltaTime; 
+                            if (y ==481.25){
+                                System.out.println("cacaMoataz");
+                            }
+                        }
+                        else{
+                            y+=vitesse*deltaTime;
+                        }
+                        this.getPosition().setY(y);
+                    }
+                }
             }
         }
+    }*/
 
-        return ennemiAvance;
+
+
+
+
+
+    public void avancer(double deltaTime, List<Case> chemin, double vitesse) {
+        for (int i = 0; i < chemin.size() - 1; i++) {
+            PositionCase currentCase = chemin.get(i).getPosition();
+            PositionCase nextCase = chemin.get(i + 1).getPosition();
+    
+            // Convertir les positions des cases en pixels
+            Position currentPosition = Position.fromCase(currentCase, Forme.getHalfLenghtCase());
+            Position nextPosition = Position.fromCase(nextCase, Forme.getHalfLenghtCase());
+    
+            // Calculer la différence en X et Y entre les positions
+            double dx_total = nextPosition.getX() - currentPosition.getX();
+            double dy_total = nextPosition.getY() - currentPosition.getY();
+    
+            // Calculer la distance totale entre les positions
+            double distance_total = Math.sqrt(dx_total * dx_total + dy_total * dy_total);
+    
+            // Normaliser les vecteurs de direction
+            double dx_normalized = dx_total / distance_total;
+            double dy_normalized = dy_total / distance_total;
+    
+            // Initialiser la distance parcourue
+            double distance_parcourue = 0.0;
+    
+            // Initialiser la position du minion
+            double x = currentPosition.getX();
+            double y = currentPosition.getY();
+    
+            // Boucle pour déplacer le minion vers la prochaine case
+            while (distance_parcourue < distance_total) {
+                // Calculer la distance du pas
+                double step_distance = vitesse * deltaTime;
+    
+                // Éviter de dépasser la distance totale
+                if (distance_parcourue + step_distance > distance_total) {
+                    step_distance = distance_total - distance_parcourue;
+                }
+    
+                // Mettre à jour les positions X et Y
+                x += dx_normalized * step_distance;
+                y += dy_normalized * step_distance;
+    
+                // Mettre à jour la position du minion
+                this.getPosition().setX(x);
+                this.getPosition().setY(y);
+    
+                // Mettre à jour la distance parcourue
+                distance_parcourue += step_distance;
+            }
+    
+            // S'assurer que le minion est exactement à la position de la prochaine case
+            this.getPosition().setX(nextPosition.getX());
+            this.getPosition().setY(nextPosition.getY());
+        }
     }
 
-       //!!!!  faire calculer distance parcoure !!!
+    
+    
     
 
     public abstract void attaquer(Unite cible);

@@ -1,69 +1,131 @@
 import java.awt.Color;
+import java.io.IOException;
+import libraries.StdDraw; 
 
-import java.util.ArrayList;
-import java.util.List;
+/*public class App {
+    public static void main(String[] args) throws IOException {
+        // Initialiser les objets nécessaires
+        Forme forme = new Forme(".\\resources\\resources\\maps\\10-10.mtp");
+        UniteGraphique uniteGraphique = new UniteGraphique();
+        InterfaceGraphique interfaceGraphique = new InterfaceGraphique(forme, uniteGraphique);
+        Wave wave = new Wave(forme);
+        
+        // Charger une vague
+        wave.creerVague(".\\resources\\resources\\waves\\waveMinion.wve");
+        System.out.println(wave.getVague());
 
-public class App {
-    public static void main(String[] args) throws Exception {
-        try {
-            // Charger une carte exemple
-            Forme forme = new Forme(".\\resources\\resources\\maps\\5-8.mtp");
-            Case spawn = forme.trouverSpawn();
-            Position positionSpawn = spawn.getPosition();
-            System.out.println("Position actuelle : " + positionSpawn);
+        // Configurer la fenêtre
+        interfaceGraphique.fenetre();
 
-            new InterfaceGraphique(forme);
+        // Variables pour le chrono
+        long startTime = System.currentTimeMillis();
 
-        } catch (Exception e) {
-            System.err.println("Erreur : " + e.getMessage());
+        while (true) {
+            // Calculer le temps écoulé
+            double elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000.0;
+            System.out.println(elapsedTimeSec);
+            //previousTime = currentTime;
+
+            // Mettre à jour et afficher les zones
+            interfaceGraphique.afficherZones(wave, elapsedTimeSec);
+
+            // Pause pour limiter les mises à jour (facultatif, environ 60 FPS)
+            StdDraw.pause(16);
         }
-        List<Case> chemin = new ArrayList<>();
-        chemin.add(new Case("S", new Position(0, 0), false));
-        chemin.add(new Case("R", new Position(1, 0), false));
-        chemin.add(new Case("R", new Position(2, 0), false));
-        chemin.add(new Case("B", new Position(3, 0), false));
+    }
+}*/
 
-        // Création d'un ennemi spécifique (Minion)
-        Minion ennemi = new Minion("Minion", 10, 1, 1.0, 1, new Position(0, 0), Element.NEUTRE, 1.5, 5, Color.BLACK,0.4);
-        
 
-        // Simulation d'avancée
-        double deltaTime = 0.5; // Intervalle de temps (en secondes)
-        //ennemi.avancer(chemin);
-        
+
+public class App{
+    public static void main ( String [] args ) throws IOException{
+        Game g = new Game () ;
+        g. launch () ;
     }
 }
 
+/*public class App{
+    public static void main ( String [] args ) throws IOException{
+        Forme f = new Forme(".\\resources\\resources\\maps\\10-10.mtp");
+        Wave w = new Wave(f);
+        w.creerVague(".\\resources\\resources\\waves\\waveMinion.wve");
+        System.out.println(w);
+        System.out.println(f.calculerChemin());
+        PositionCase start = f.trouverSpawn().getPosition();
+        PositionCase fin = f.trouverBase().getPosition();
+        PositionCase deuxieme = new PositionCase(2, 1);
+        Position deux = Position.fromCase(deuxieme, f.getHalfLenghtCase());
+        Position startPosition = Position.fromCase(start,f.getHalfLenghtCase());
+        System.out.println(start);
+        Position finPosition = Position.fromCase(fin,f.getHalfLenghtCase());
+        System.out.println(startPosition);
+        System.out.println(finPosition);
+        Minion min = new Minion(
+            "min",           // Nom
+            100,             // Points de vie maximum
+            20,              // Attaque
+            1.5,             // Vitesse d'attaque
+            5,               // Portée
+            startPosition,   // Position initiale
+            Element.NEUTRE,  // Élément
+            22.0,             // Vitesse de déplacement
+            50,              // Récompense
+            Color.RED        // Couleur
+        );
+        System.out.println("debut : "+min.getPosition());
+        min.avancer(0.001,f.calculerChemin(),min.getSpeed());
+        System.out.println("fin : "+min.getPosition());
+        InterfaceGraphique interfaceGraphique = new InterfaceGraphique(f, new UniteGraphique());
+        //interfaceGraphique.afficherMinionAuSpawn(min);
+        interfaceGraphique.afficher(min);
+       
+
+        //Game g = new Game () ;
+        //g. launch () ;
+    }
+    
+}*/
+
 /*public class App {
-    public static void main(String[] args) throws Exception {
-        try {
-            
-            // Charger une carte exemple
-            Forme forme = new Forme(".\\resources\\resources\\maps\\10-10.mtp");
+    public static void main(String[] args) throws IOException {
+        // Configuration de la fenêtre graphique
+        StdDraw.setCanvasSize(1024, 720);
+        StdDraw.setXscale(-12, 1012);
+        StdDraw.setYscale(-10, 710);
+        StdDraw.enableDoubleBuffering();
 
-            // Initialisation de l'interface graphique
-            //new InterfaceGraphique(forme);
+        // Chargement de la carte et de la vague
+        Forme f = new Forme(".\\resources\\resources\\maps\\5-8.mtp");
+        Wave w = new Wave(f);
+        w.creerVague(".\\resources\\resources\\waves\\waveMinion.wve");
 
-            // Trouver la position du spawn
-            Case spawn = forme.trouverSpawn();
-            Position positionSpawn = spawn.getPosition();
+        // Récupération de la position de spawn
+        PositionCase spawnCase = f.trouverSpawn().getPosition();
+        double halfLengthCase = f.getHalfLenghtCase();
 
-            // Exemple de chemin
-            List<Case> chemin = forme.calculerChemin();
+        // Calcul des coordonnées du centre de la case de spawn
+        Position spawnCenter = Position.fromCase(spawnCase, halfLengthCase);
 
-            // Création d'un ennemi (Minion)
-            Minion ennemi = new Minion("Minion", 10, 1, 1.0, 1, positionSpawn, Element.NEUTRE, 1.5, 5, Color.BLACK);
+        // Création d'un minion
+        Minion min = new Minion(
+            "min",           // Nom
+            100,             // Points de vie maximum
+            20,              // Attaque
+            1.5,             // Vitesse d'attaque
+            5,               // Portée
+            spawnCenter,     // Position initiale (centre du spawn)
+            Element.NEUTRE,  // Élément
+            2.0,             // Vitesse de déplacement
+            50,              // Récompense
+            Color.RED        // Couleur
+        );
 
-            // Simulation d'avancée
-            double deltaTime = 0.5; // Intervalle de temps (en secondes)
-            System.out.println(positionSpawn.toString());
-            ennemi.avancer(deltaTime, chemin);
-            System.out.println(ennemi.getPosition().toString());
-            
+        // Affichage graphique
+        StdDraw.clear();
+        UniteGraphique.dessinerEnnemi(spawnCenter.getX(), spawnCenter.getY(), halfLengthCase / 2, Color.RED);
+        StdDraw.show();
 
-        } catch (Exception e) {
-            System.err.println("Erreur : " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Pause pour observer l'affichage
+        StdDraw.pause(2000);
     }
 }*/

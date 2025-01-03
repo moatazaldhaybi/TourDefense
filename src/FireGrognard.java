@@ -3,14 +3,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FireGrognard extends Ennemis {
+     private long dernierTempsAttaque = 0; 
 
  
-    public FireGrognard(String name, int maxPv, int atk, double atkSpeed, int range, Position position, Element element, double speed, int reward, Color color, double deltaTime) {
-        super(name, maxPv, atk, atkSpeed, range, position, element, speed, reward, color, deltaTime);
+    public FireGrognard(String name, int maxPv, int atk, double atkSpeed, int range, Position position, Element element, double speed, int reward, Color color) {
+        super(name, maxPv, atk, atkSpeed, range, position, element, speed, reward, color);
+        EnvironnementJeu.ajouterUnite(this);
     }
 
     @Override
     public void attaquer(Unite cible) {
+        long tempsActuel = System.currentTimeMillis();
+
+        // Convertir atkSpeed de secondes en millisecondes
+        long tempsRechargement = (long) (getAtkSpeed() * 1000);
+
+        if (tempsActuel - dernierTempsAttaque >= tempsRechargement) {
+
         if (cible instanceof Tour) {
             
             Tour tourCible = this.trouverTourLaPlusProche();
@@ -39,10 +48,16 @@ public class FireGrognard extends Ennemis {
         } else {
             System.out.println(getName() + " ne peut attaquer que des tours.");
         }
+        
+        dernierTempsAttaque = tempsActuel;
+        } else {
+            System.out.println(getName() + " est en rechargement et ne peut pas attaquer pour l'instant.");
+        }
     }
 
     
     
     
 }
+
 

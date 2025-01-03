@@ -3,14 +3,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WaterBrute extends Ennemis {
-
+private long dernierTempsAttaque = 0; 
     
-    public WaterBrute(String name, int maxPv, int atk, double atkSpeed, int range, Position position, Element element, double speed, int reward, Color color, double deltaTime) {
-      super(name, maxPv, atk, atkSpeed, range, position, element, speed, reward, color, deltaTime);
+    public WaterBrute(String name, int maxPv, int atk, double atkSpeed, int range, Position position, Element element, double speed, int reward, Color color) {
+      super(name, maxPv, atk, atkSpeed, range, position, element, speed, reward, color);
+      EnvironnementJeu.ajouterUnite(this);
     }
 
     @Override
     public void attaquer(Unite cible) {
+         long tempsActuel = System.currentTimeMillis();
+
+        // Convertir atkSpeed de secondes en millisecondes
+        long tempsRechargement = (long) (getAtkSpeed() * 1000);
+
+        if (tempsActuel - dernierTempsAttaque >= tempsRechargement) {
+            
         if (cible instanceof Tour) {
             List<Tour> toursDansPortee = getToursDansPortee();
             if (!toursDansPortee.isEmpty()) {
@@ -45,4 +53,5 @@ public class WaterBrute extends Ennemis {
    
     
      
+}
 }

@@ -7,31 +7,31 @@ public class Forme {
     private Case[][] cases;
     private int rows;
     private int cols;
-    private double halfLenghtCase;
-
-    public Forme(String filePath) throws IOException {
-        creerForme(filePath);
-    }
-
-    public Case getCase(int i, int j) {
-        return cases[i][j];
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
-    public int getCols() {
-        return cols;
-    }
+    private static double halfLenghtCase;
     
-
-    public double getHalfLenghtCase() {
-        return halfLenghtCase;
+        public Forme(String filePath) throws IOException {
+            creerForme(filePath);
+        }
+    
+        public Case getCase(int i, int j) {
+            return cases[i][j];
+        }
+    
+        public int getRows() {
+            return rows;
+        }
+    
+        public void setRows(int rows) {
+            this.rows = rows;
+        }
+    
+        public int getCols() {
+            return cols;
+        }
+        
+    
+        public static double getHalfLenghtCase() {
+            return halfLenghtCase;
     }
 
     public void setCols(int cols) {
@@ -79,7 +79,7 @@ public class Forme {
                     throw new IllegalArgumentException("Caractère invalide détecté : " + c);
                 }
 
-                this.cases[i][j] = new Case(String.valueOf(c), new Position(i, j), false);
+                this.cases[i][j] = new Case(String.valueOf(c), new PositionCase(i, j), false);
             }
         }
     }
@@ -107,8 +107,8 @@ public class Forme {
 
     public List<Case> getVoisins(Case c) {
         List<Case> voisins = new ArrayList<>();
-        int i = c.getPosition().getX();
-        int j = c.getPosition().getY();
+        int i = c.getPosition().getRow();
+        int j = c.getPosition().getCol();
 
         if (i > 0)
             voisins.add(cases[i - 1][j]);
