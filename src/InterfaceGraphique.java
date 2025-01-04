@@ -11,6 +11,10 @@ public class InterfaceGraphique {
   private Forme forme;
   UniteGraphique affichageUnite;
 
+  public void setAffichageUnite(UniteGraphique affichageUnite) {
+    this.affichageUnite = affichageUnite;
+  }
+
   public InterfaceGraphique(Forme forme, UniteGraphique affichageUnite) {
     this.forme = forme;
     this.affichageUnite = affichageUnite;

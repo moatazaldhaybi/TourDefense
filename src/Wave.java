@@ -41,7 +41,7 @@ public class Wave {
         Position spawnPosition = Position.fromCase(forme.trouverSpawn().getPosition(), forme.getHalfLenghtCase());
         switch (type) {
             case "Minion":
-                return new Minion("Minion", 10, 1, 1.0, 1, spawnPosition, Element.NEUTRE, 1.5, 5, Color.BLACK);
+                return new Minion("Minion", 10, 1, 1.0, 1, spawnPosition, Element.NEUTRE, 1*2*forme.getHalfLenghtCase(), 5, Color.BLACK);
             case "Earth Brute":
                 return new EarthBrute("Earth Brute", 30, 5, 1.0, 3, spawnPosition, Element.TERRE, 1.0, 10,
                         new Color(0, 167, 15));
