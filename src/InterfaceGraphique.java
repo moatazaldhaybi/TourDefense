@@ -3,33 +3,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 import libraries.StdDraw;
 
 public class InterfaceGraphique {
-  
+
   private Forme forme;
   UniteGraphique affichageUnite;
+  private List<Case> caseTour;
   private Joueur joueur;
+  private double x0 = 0;
+  private double y0 = 0;
+  private Tour tour;
+  private boolean m_estStoreSelectionne = false;
 
   public void setAffichageUnite(UniteGraphique affichageUnite) {
     this.affichageUnite = affichageUnite;
   }
 
-  public InterfaceGraphique(Forme forme, UniteGraphique affichageUnite, Joueur joueur) {
+  public InterfaceGraphique(Forme forme, UniteGraphique affichageUnite, Joueur joueur, Tour tour) {
+    this.tour = tour;
     this.forme = forme;
     this.affichageUnite = affichageUnite;
     this.joueur = joueur;
+    this.caseTour = forme.calculerCasesTour();
 
   }
 
   public void afficher(Wave wave) {
     fenetre(); // Configure la fenêtre
     afficherZones(wave); // Appelle l'affichage des zones dès l'instanciation
-    interagirAvecLaSouris();
   }
 
-  public void disparus(){
+  public void disparus() {
     fenetre();
     afficherZoneMap();
     afficherZoneLevel();
@@ -45,13 +50,73 @@ public class InterfaceGraphique {
   }
 
   public void afficherZones(Wave wave) {
-    //afficherZoneMap();
-    //afficherZoneLevel();
+    // afficherZoneMap();
+    // afficherZoneLevel();
+
+    if (StdDraw.isMousePressed()) {
+      // Récupère les coordonnées de la souris
+      double x = StdDraw.mouseX();
+      double y = StdDraw.mouseY();
+      caseDeselectionne(x0, y0);
+      x0 = x;
+      y0 = y;
+      caseSelectionne(x, y);
+
+    }
+
     afficherZonePlayer();
     afficherZoneStore();
     // testAff();
     afficherCheminEnnemis(wave, affichageUnite.getEnnemisActif());
     StdDraw.show();
+  }
+
+  private boolean estDansZoneStore(double x, double y) {
+    // Définir le centre et les demi-dimensions de la zone Store
+    double centerX = 856;
+    double centerY = 303;
+    double halfWidth = 144;
+    double halfHeight = 303;
+
+    // Vérifier si le point (x, y) est dans les limites du rectangle
+    return (x >= centerX - halfWidth && x <= centerX + halfWidth &&
+        y >= centerY - halfHeight && y <= centerY + halfHeight);
+  }
+
+  public void caseSelectionne(double x, double y) {
+    if (!estDansZoneStore(x, y)) {
+      double a = 350.0;
+      int rows = forme.getRows();
+      int cols = forme.getCols();
+      double maxHalfLength = Math.min(a / cols, a / rows);
+      int row = (int) ((a + a - y) / (2 * maxHalfLength));
+      int col = (int) ((x - (a - a)) / (2 * maxHalfLength));
+      double caseCenterX = a - a + maxHalfLength * (2 * col + 1);
+      double caseCenterY = a + a - maxHalfLength * (2 * row + 1);
+      StdDraw.setPenColor(Color.YELLOW);
+      StdDraw.square(caseCenterX, caseCenterY, maxHalfLength);
+    }
+
+  }
+
+  public void caseDeselectionne(double x, double y) {
+    // System.out.println(x);
+    // System.out.println(y);
+    if (!estDansZoneStore(x, y)) {
+      if (x != 0 && y != 0) {
+        double a = 350.0;
+        int rows = forme.getRows();
+        int cols = forme.getCols();
+        double maxHalfLength = Math.min(a / cols, a / rows);
+        int row = (int) ((a + a - y) / (2 * maxHalfLength));
+        int col = (int) ((x - (a - a)) / (2 * maxHalfLength));
+        double caseCenterX = a - a + maxHalfLength * (2 * col + 1);
+        double caseCenterY = a + a - maxHalfLength * (2 * row + 1);
+        StdDraw.setPenRadius(0.003);
+        StdDraw.setPenColor(Color.BLACK);
+        StdDraw.square(caseCenterX, caseCenterY, maxHalfLength);
+      }
+    }
   }
 
   public void testAff() {
@@ -158,8 +223,6 @@ public class InterfaceGraphique {
     // Dessiner le rectangle représentant la Zone Player
     StdDraw.setPenColor(Color.BLACK);
     StdDraw.rectangle(centerX, centerY, halfWidth, halfHeight);
-    
-
 
     // Dessiner une pièce (cercle doré) plus à gauche
     double pieceRadius = 20; // Rayon de la pièce
@@ -171,8 +234,8 @@ public class InterfaceGraphique {
     StdDraw.textRight(centerX + halfWidth - 10, centerY, "50");
     StdDraw.setPenColor(Color.BLACK);
     StdDraw.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16));
-    StdDraw.textRight(centerX + halfWidth - 50, centerY, ""+joueur.getPointsDeVie());
-    StdDraw.textLeft(centerX - halfWidth + 50, centerY, ""+joueur.getArgent());
+    StdDraw.textRight(centerX + halfWidth - 50, centerY, "" + joueur.getPointsDeVie());
+    StdDraw.textLeft(centerX - halfWidth + 50, centerY, "" + joueur.getArgent());
 
     // Dessiner un cœur (rouge) plus à droite
     double heartX = centerX + halfWidth - 30; // Ajuster pour placer plus à droite
@@ -228,7 +291,69 @@ public class InterfaceGraphique {
     // Ajouter du texte (optionnel)
     StdDraw.setPenColor(Color.BLACK);
     StdDraw.text(centerX, centerY + 280, "Store"); // Texte au-dessus de la zone
+    if (StdDraw.isMousePressed()) {
+      // Récupère les coordonnées de la souris
+      double x = StdDraw.mouseX();
+      double y = StdDraw.mouseY();
+      if (estDansZoneStore(x, y)) {
+        // System.out.println("Boss : "+estDansZoneStore(x, y));
+        m_estStoreSelectionne = true;
+      }
+      if (m_estStoreSelectionne) {
+        if (joueur.verifierAcheterTour(tour)) {
+          StdDraw.setPenColor(Color.WHITE);
+          StdDraw.filledRectangle(centerX, centerY - 150, 135, 20);
+          afficherTourSelec(tour);
 
+        } else {
+          // Afficher un message sur la zone graphique pour indiquer que l'argent est
+          // insuffisant
+          StdDraw.setPenColor(Color.RED);
+          StdDraw.text(centerX, centerY - 150, "Argent insuffisant pour acheter la tour!");
+
+        }
+        // //if(m_estStoreSelectionne){
+        // if(StdDraw.isMousePressed()){
+        // double a = StdDraw.mouseX();
+        // double b = StdDraw.mouseY();
+        // if (estDansZoneStore(a, b)){
+        // //System.out.println("Boss : "+estDansZoneStore(x, y));
+        // m_estStoreSelectionne = false;
+        // }
+        // }
+
+      }
+
+    }
+
+  }
+
+  public void afficherTourSelec(Tour t) {
+    if (StdDraw.isMousePressed()) {
+      double a = StdDraw.mouseX();
+      double b = StdDraw.mouseY();
+      Position positionSouris = new Position(a, b);
+      PositionCase posCaseSouris = Position.toCase(positionSouris, forme.getHalfLenghtCase());
+      for (Case p : caseTour) {
+        if (posCaseSouris.getRow() == p.getPosition().getRow() && posCaseSouris.getCol() == p.getPosition().getCol()) {
+          if (!p.isOccupe()) {
+            afficherTour(t, p.getPosition().getRow(), p.getPosition().getCol());
+            joueur.acheterTour(t);
+            m_estStoreSelectionne = false;
+            p.setOccupe(true);
+          }
+        }
+      }
+    }
+  }
+
+  public List<Position> caseTourPixel() {
+    List<Position> p = new ArrayList<>();
+    for (Case c : caseTour) {
+      Position pCase = Position.fromCase(c.getPosition(), forme.getHalfLenghtCase());
+      p.add(pCase);
+    }
+    return p;
   }
 
   /*
@@ -323,70 +448,38 @@ public class InterfaceGraphique {
     List<Case> chemin = forme.getChemin();
     for (Case c : chemin) {
       StdDraw.setPenColor(getCouleur(c.getType()));
-      StdDraw.filledSquare(Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getX(), Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getY(), forme.getHalfLenghtCase());
-      StdDraw.setPenColor(Color.BLACK);
-      StdDraw.square(Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getX(), Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getY(), forme.getHalfLenghtCase());
+      StdDraw.filledSquare(Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getX(),
+          Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getY(), forme.getHalfLenghtCase());
+      // StdDraw.setPenColor(Color.BLACK);
+      // StdDraw.square(Position.fromCase(c.getPosition(),
+      // forme.getHalfLenghtCase()).getX(), Position.fromCase(c.getPosition(),
+      // forme.getHalfLenghtCase()).getY(), forme.getHalfLenghtCase());
     }
     for (Ennemis ennemi : ennemisActifs) {
       // Obtenir la position actuelle de l'ennemi
       Position currentPosition = ennemi.getPosition();
 
       // Dessiner l'ennemi sur sa position actuelle
-      affichageUnite.dessinerEnnemi(
-          currentPosition.getX(),
-          currentPosition.getY(),
-          forme.getHalfLenghtCase() / 5,
-          ennemi.getColor());
+
+      if (!Position.toCase(ennemi.getPosition(), forme.getHalfLenghtCase())
+          .comparePosition(forme.trouverBase().getPosition())) {
+        affichageUnite.dessinerEnnemi(
+            currentPosition.getX(),
+            currentPosition.getY(),
+            forme.getHalfLenghtCase() / 5,
+            ennemi.getColor());
+      }
     }
 
     // Mettre à jour l'affichage
     StdDraw.show();
   }
 
-  /*
-   * public void afficherEnemisAuSpawn(Wave wave, double elapsedTimeMs) {
-   * Map<Temps, Ennemis> ennemisMap = wave.getVague();
-   * 
-   * for (Map.Entry<Temps, Ennemis> entry : ennemisMap.entrySet()) {
-   * Temps temps = entry.getKey();
-   * Ennemis ennemi = entry.getValue();
-   * 
-   * if (temps.getTempsMs() == elapsedTimeMs) {
-   * Position spawnPosition =
-   * Position.fromCase(forme.trouverSpawn().getPosition(),
-   * forme.getHalfLenghtCase());
-   * ennemi.setPosition(spawnPosition);
-   * 
-   * affichageUnite.dessinerEnnemi(
-   * spawnPosition.getX(),
-   * spawnPosition.getY(),
-   * forme.getHalfLenghtCase() / 2,
-   * ennemi.getColor());
-   * StdDraw.show();
-   * }
-   * }
-   * }
-   */
-  /*
-   * public void afficherCheminEnnemis(Wave wave, List<Ennemis> ennemisActifs) {
-   * // Afficher tous les ennemis actifs sur leur position actuelle
-   * for (Ennemis ennemi : ennemisActifs) {
-   * // Obtenir la position actuelle de l'ennemi
-   * Position currentPosition = ennemi.getPosition();
-   * 
-   * // Dessiner l'ennemi sur sa position actuelle
-   * affichageUnite.dessinerEnnemi(
-   * currentPosition.getX(),
-   * currentPosition.getY(),
-   * forme.getHalfLenghtCase() / 2,
-   * ennemi.getColor()
-   * );
-   * }
-   * 
-   * // Mettre à jour l'affichage
-   * StdDraw.show();
-   * }
-   */
+  public void afficherTour(Tour t, int x, int y) {
+    Position p = Position.fromCase(new PositionCase(x, y), forme.getHalfLenghtCase());
+    System.out.println(p);
+    affichageUnite.dessinerTour(p.getX(), p.getY(), forme.getHalfLenghtCase(), forme.getHalfLenghtCase(), t.getColor());
+  }
 
   public void afficherEnemisAuSpawn(Wave wave, double elapsedTimeMs) {
     Map<Temps, Ennemis> ennemisMap = wave.getVague();
@@ -409,35 +502,4 @@ public class InterfaceGraphique {
 
     StdDraw.show();
   }
-
-  /*
-   * public void afficherEnemisAuSpawn(Wave wave, double elapsedTimeMs) {
-   * Map<Temps, Ennemis> ennemisMap = wave.getVague();
-   * 
-   * for (Map.Entry<Temps, Ennemis> entry : ennemisMap.entrySet()) {
-   * Temps temps = entry.getKey();
-   * Ennemis ennemi = entry.getValue();
-   * 
-   * // Comparer les temps arrondis à une décimale
-   * if (Math.round(temps.getSecondes() * 10) / 10.0 == Math.round(elapsedTimeMs *
-   * 10) / 10.0) {
-   * // Calculer la position de spawn
-   * Position spawnPosition =
-   * Position.fromCase(forme.trouverSpawn().getPosition(),
-   * forme.getHalfLenghtCase());
-   * ennemi.setPosition(spawnPosition);
-   * 
-   * // Dessiner l'ennemi à la position de spawn
-   * affichageUnite.dessinerEnnemi(
-   * spawnPosition.getX(),
-   * spawnPosition.getY(),
-   * forme.getHalfLenghtCase() / 2,
-   * ennemi.getColor());
-   * }
-   * }
-   * 
-   * // Mettre à jour l'affichage après les dessins
-   * StdDraw.show();
-   * }
-   */
 }

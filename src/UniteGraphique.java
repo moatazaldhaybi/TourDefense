@@ -25,8 +25,8 @@ public class UniteGraphique {
     public static void dessinerTour(double x, double y, double largeur, double hauteur, Color couleur) {
         StdDraw.setPenColor(couleur);
         StdDraw.filledRectangle(x, y, largeur / 2, hauteur / 2);
-        StdDraw.setPenColor(Color.BLACK);
-        StdDraw.rectangle(x, y, largeur / 2, hauteur / 2); // Contour
+        /*StdDraw.setPenColor(Color.BLACK);
+        StdDraw.rectangle(x, y, largeur / 2, hauteur / 2); // Contour*/
     }
 
     // Méthode pour afficher toutes les unités sur la carte

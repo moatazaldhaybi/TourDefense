@@ -113,47 +113,6 @@ public abstract class Ennemis extends Unite {
         return tourLaPlusProche;
     }
 
-    /*
-     * public void avancer(double deltaTime, List<Case> chemin, double vitesse){
-     * for(int i=0; i<chemin.size()-1; i++){
-     * PositionCase current = chemin.get(i).getPosition();
-     * PositionCase prochain = chemin.get(i+1).getPosition();
-     * double distanceTotal = current.distanceTo(prochain);
-     * if(current.getRow()==prochain.getRow()){
-     * double x = this.getPosition().getX();
-     * for(double j=0;j<distanceTotal;j+=deltaTime){
-     * if(current.getCol()<prochain.getCol()){
-     * x+=vitesse*deltaTime;
-     * }
-     * else{
-     * x-=vitesse*deltaTime;
-     * }
-     * this.getPosition().setX(x);
-     * }
-     * }
-     * else{
-     * double y = this.getPosition().getY();
-     * while (Math.abs(y - 481.25) > 0.01) {
-     * 
-     * for(double j=0;j<1;j+=deltaTime){
-     * if(current.getRow()<prochain.getRow()){
-     * 
-     * y-=vitesse*deltaTime;
-     * if (y ==481.25){
-     * System.out.println("cacaMoataz");
-     * }
-     * }
-     * else{
-     * y+=vitesse*deltaTime;
-     * }
-     * this.getPosition().setY(y);
-     * }
-     * }
-     * }
-     * }
-     * }
-     */
-
     public void avancer(double deltaTime, List<Case> chemin, double vitesse) {
         if (m_indexPath < chemin.size()-1) {
             PositionCase currentCase = chemin.get(m_indexPath).getPosition();

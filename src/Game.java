@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +10,20 @@ public class Game {
     private Forme forme;
     private InterfaceGraphique interfaceGraphique;
     private List<Ennemis> ennemisActifs;
+    private List<Case> m_chemin;
     private Joueur joueur;
+    private Tour tour;
+    private Position position;
 
     public Game() throws IOException {
         gameRunning = true;
         forme = new Forme(".\\resources\\resources\\maps\\10-10.mtp"); // Initialise la carte
+        position = Position.fromCase(new PositionCase(2, 3), forme.getHalfLenghtCase());
+        System.out.println(position);
+        tour = new Tour("BossMoataz", 100, 10, 2, 4, Element.FEU, position, 25, Color.BLUE);
         joueur = new Joueur(forme);
         ennemisActifs = new ArrayList<>(); // Liste des ennemis actuellement sur le chemin
-        interfaceGraphique = new InterfaceGraphique(forme, new UniteGraphique(ennemisActifs), joueur);
+        interfaceGraphique = new InterfaceGraphique(forme, new UniteGraphique(ennemisActifs), joueur, tour);
         wave = new Wave(forme); // Initialise les vagues
     }
 
@@ -43,12 +50,13 @@ public class Game {
     }
 
     private void init() throws IOException {
-        forme.calculerChemin();
+        m_chemin = forme.calculerChemin();
         //System.out.println(m_chemin);
-        wave.creerVague(".\\resources\\resources\\waves\\waveMinion.wve"); // Charge `  un fichier de vague
+        wave.creerVague(".\\resources\\resources\\waves\\waveBoss.wve"); // Charge `  un fichier de vague
         interfaceGraphique.fenetre();
         interfaceGraphique.afficherZoneMap();
         interfaceGraphique.afficherZoneLevel();
+        //interfaceGraphique.afficherTour(tour);
         //System.out.println("Vague chargée avec succès.");
     }
 private void update(double iDeltaTimeSec) {
@@ -87,7 +95,7 @@ private void update(double iDeltaTimeSec) {
             
             ennemisActifs.remove(i); // Supprime l'ennemi
             joueur.ennemisBase(ennemi);
-            System.out.println("Un ennemi a atteint la base !");
+            //System.out.println("Un ennemi a atteint la base !");
         }
     
         // Met à jour la position de l'ennemi

@@ -43,18 +43,18 @@ public class Wave {
             case "Minion":
                 return new Minion("Minion", 10, 3, 1.0, 1, spawnPosition, Element.NEUTRE, 1*2*forme.getHalfLenghtCase(), 5, Color.BLACK);
             case "Earth Brute":
-                return new EarthBrute("Earth Brute", 30, 5, 1.0, 3, spawnPosition, Element.TERRE, 1.0, 10,
+                return new EarthBrute("Earth Brute", 30, 5, 1.0, 3, spawnPosition, Element.TERRE, 1*2*forme.getHalfLenghtCase(), 10,
                         new Color(0, 167, 15));
             case "Water Brute":
-                return new WaterBrute("Water Brute", 30, 5, 1.0, 3, spawnPosition, Element.EAU, 1.0, 10, Color.BLUE);
+                return new WaterBrute("Water Brute", 30, 5, 1.0, 3, spawnPosition, Element.EAU, 1*2*forme.getHalfLenghtCase(), 10, Color.BLUE);
             case "Fire Grognard":
-                return new FireGrognard("Fire Grognard", 20, 7, 0.5, 2, spawnPosition, Element.FEU, 2.0, 15,
+                return new FireGrognard("Fire Grognard", 20, 7, 0.5, 2, spawnPosition, Element.FEU, 2*2*forme.getHalfLenghtCase(), 15,
                         new Color(184, 22, 1));
             case "Wind Grognard":
-                return new WindGrognard("Wind Grognard", 20, 7, 0.5, 2, spawnPosition, Element.AIR, 2.0, 15,
+                return new WindGrognard("Wind Grognard", 20, 7, 0.5, 2, spawnPosition, Element.AIR, 2*2*forme.getHalfLenghtCase(), 15,
                         Color.YELLOW);
             case "Boss":
-                return new Boss("Boss", 150, 50, 1.0, 5, spawnPosition, Element.NEUTRE, 0.5, 100,
+                return new Boss("Boss", 150, 50, 1.0, 5, spawnPosition, Element.NEUTRE, 0.5*2*forme.getHalfLenghtCase(), 100,
                         new Color(128, 0, 128));
             default:
                 throw new IllegalArgumentException("Type d'ennemi inconnu : " + type);

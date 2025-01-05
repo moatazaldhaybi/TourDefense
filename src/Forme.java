@@ -191,4 +191,23 @@ public class Forme {
         return c.getType().equals("R") || c.getType().equals("S") || c.getType().equals("B");
     }
 
+    public List<Case> calculerCasesTour() {
+        List<Case> casesTour = new ArrayList<>();
+    
+        int rows = getRows(); // Nombre de lignes
+        int cols = getCols(); // Nombre de colonnes
+    
+        // Parcourir toutes les cases de la grille
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Case c = getCase(i, j);
+                if (c.getType().equals("C")) { // Vérifie si le type de la case est "C"
+                    casesTour.add(c);
+                }
+            }
+        }
+    
+        return casesTour; // Retourne la liste des cases de tour
+    }
+
 }

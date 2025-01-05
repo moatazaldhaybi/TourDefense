@@ -61,8 +61,23 @@ public class Joueur {
   public void ennemisBase(Ennemis enemi){
     if (Position.toCase(enemi.getPosition(), forme.getHalfLenghtCase()).comparePosition(forme.trouverBase().getPosition())){
         pointsDeVie-=enemi.getAtk();
+        argent+=50;
+        if(pointsDeVie<=0){
+            pointsDeVie=0;
+        }
         //setPointsDeVie(pointsDeVie);
     }
+  }
+
+  public boolean verifierAcheterTour(Tour t){
+    if (t.getCost()<=argent){
+        return true;
+    }
+    return false;
+  }
+
+  public void acheterTour(Tour t){
+    argent-=t.getCost();
   }
 
   @Override
