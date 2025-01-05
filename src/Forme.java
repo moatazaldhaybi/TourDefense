@@ -8,6 +8,7 @@ public class Forme {
     private int rows;
     private int cols;
     private static double halfLenghtCase;
+    private List<Case> m_chemin;
     
         public Forme(String filePath) throws IOException {
             creerForme(filePath);
@@ -146,7 +147,7 @@ public class Forme {
     }
 
     public List<Case> calculerChemin() {
-        List<Case> chemin = new ArrayList<>();
+        m_chemin = new ArrayList<>();
         Set<Case> visites = new HashSet<>();
         Stack<Case> pile = new Stack<>();
 
@@ -159,10 +160,10 @@ public class Forme {
 
         while (!pile.isEmpty()) {
             Case current = pile.pop();
-            chemin.add(current);
+            m_chemin.add(current);
 
             if (current.equals(base)) {
-                return chemin;
+                return m_chemin;
             }
 
             boolean voisinAjoute = false;
@@ -175,11 +176,15 @@ public class Forme {
             }
 
             if (!voisinAjoute) {
-                chemin.remove(chemin.size() - 1);
+                m_chemin.remove(m_chemin.size() - 1);
             }
         }
 
         throw new IllegalArgumentException("Aucun chemin n'existe entre le Spawn et la Base !");
+    }
+
+    public List<Case> getChemin() {
+        return m_chemin;
     }
 
     private boolean estAccessible(Case c) {

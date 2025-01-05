@@ -1,3 +1,5 @@
+import javax.swing.text.Position;
+
 public class PositionCase {
   private int row; // Ligne
   private int col; // Colonne
@@ -21,6 +23,10 @@ public class PositionCase {
     double dx = this.row - other.row;
     double dy = this.col - other.col;
     return Math.sqrt(dx * dx + dy * dy);
+}
+
+public boolean comparePosition(PositionCase p){
+    return this.getRow()==p.getRow() && this.getCol()==p.getCol();
 }
 
 

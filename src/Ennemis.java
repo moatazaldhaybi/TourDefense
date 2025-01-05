@@ -155,52 +155,73 @@ public abstract class Ennemis extends Unite {
      */
 
     public void avancer(double deltaTime, List<Case> chemin, double vitesse) {
-        PositionCase currentCase = chemin.get(m_indexPath).getPosition();
-        PositionCase nextCase = chemin.get(m_indexPath + 1).getPosition();
+        if (m_indexPath < chemin.size()-1) {
+            PositionCase currentCase = chemin.get(m_indexPath).getPosition();
+            PositionCase nextCase = chemin.get(m_indexPath + 1).getPosition();
 
-        // Convertir les positions des cases en pixels
-        Position currentPosition = Position.fromCase(currentCase, Forme.getHalfLenghtCase());
-        Position nextPosition = Position.fromCase(nextCase, Forme.getHalfLenghtCase());
+            // Convertir les positions des cases en pixels
+            Position currentPosition = Position.fromCase(currentCase, Forme.getHalfLenghtCase());
+            Position nextPosition = Position.fromCase(nextCase, Forme.getHalfLenghtCase());
 
-        // Calculer la différence en X et Y entre les positions
-        double dx_total = nextPosition.getX() - currentPosition.getX();
-        double dy_total = nextPosition.getY() - currentPosition.getY();
+            // Calculer la différence en X et Y entre les positions
+            double dx_total = nextPosition.getX() - currentPosition.getX();
+            double dy_total = nextPosition.getY() - currentPosition.getY();
 
-        // Calculer la distance totale entre les positions
-        double distance_total = Math.sqrt(dx_total * dx_total + dy_total * dy_total);
+            // Calculer la distance totale entre les positions
+            double distance_total = Math.sqrt(dx_total * dx_total + dy_total * dy_total);
 
-        // Normaliser les vecteurs de direction
-        double dx_normalized = dx_total / distance_total;
-        double dy_normalized = dy_total / distance_total;
+            // Normaliser les vecteurs de direction
+            double dx_normalized = dx_total / distance_total;
+            double dy_normalized = dy_total / distance_total;
 
-        // Initialiser la position du minion
-        double x = this.getPosition().getX();
-        double y = this.getPosition().getY();
+            // Initialiser la position du minion
+            double x = this.getPosition().getX();
+            double y = this.getPosition().getY();
 
-        // Boucle pour déplacer le minion vers la prochaine case
-        // Calculer la distance du pas
-        double step_distance = vitesse * deltaTime;
+            // Boucle pour déplacer le minion vers la prochaine case
+            // Calculer la distance du pas
+            double step_distance = vitesse * deltaTime;
+            if(currentCase.getCol()== 7 && currentCase.getRow()==1 && m_distanceParcourue == distance_total){
+                System.out.println("1");
+            }
 
-        // Mettre à jour les positions X et Y
-        x += dx_normalized * step_distance;
-        y += dy_normalized * step_distance;
+            if(nextCase!=chemin.get(chemin.size()-1).getPosition()){
+                PositionCase nextNextCase = chemin.get(m_indexPath + 2).getPosition();
+                if((currentCase.getRow()==nextCase.getRow()&&nextCase.getCol()==nextNextCase.getCol())||(currentCase.getCol()==nextCase.getCol()&&nextCase.getRow()==nextNextCase.getRow())){
+                    // Mettre à jour la distance parcourue
+                    if (m_distanceParcourue + step_distance > distance_total) {
+                        step_distance = distance_total - m_distanceParcourue;
+                    }
+                    //System.out.println("CD: " + " " + m_distanceParcourue + " " +
+                    //currentCase.getCol()+ " " + nextCase.getRow() + " " + nextCase.getCol());
+                }
+            }
 
-        // Mettre à jour la position du minion
-        this.getPosition().setX(x);
-        this.getPosition().setY(y);
+            // Mettre à jour les positions X et Y
+            x += dx_normalized * step_distance;
+            y += dy_normalized * step_distance;
 
-        // Mettre à jour la distance parcourue
-        m_distanceParcourue += step_distance;
-        if (m_distanceParcourue >= distance_total) {
-            m_indexPath++;
-            m_distanceParcourue=0.0;
-            currentCase = chemin.get(m_indexPath).getPosition();
-            nextCase = chemin.get(m_indexPath + 1).getPosition();
-            System.out.println("CC: " + this + " " + currentCase.getRow() + " " + currentCase.getCol()+ " " + nextCase.getRow() + " " + nextCase.getCol());
+            // Mettre à jour la position du minion
+            this.getPosition().setX(x);
+            this.getPosition().setY(y);
+
+            m_distanceParcourue += step_distance;
+            // Éviter de dépasser la distance totale
+            if (m_distanceParcourue >= distance_total) {
+
+                m_indexPath++;
+                m_distanceParcourue = m_distanceParcourue - distance_total;
+                // currentCase = chemin.get(m_indexPath).getPosition();
+                // nextCase = chemin.get(m_indexPath + 1).getPosition();
+                // System.out.println("CC: " + this + " " + currentCase.getRow() + " " +
+                // currentCase.getCol()+ " " + nextCase.getRow() + " " + nextCase.getCol());
+            }
         }
-        //System.out.println("DXY: " + this + " " + dx_normalized + " " + dy_normalized);
-        //System.out.println("PE: " + this + " " + x + " " + y);
-        //System.out.println("PPT: " + this + " " + m_distanceParcourue + " " + distance_total);
+        // System.out.println("DXY: " + this + " " + dx_normalized + " " +
+        // dy_normalized);
+        // System.out.println("PE: " + this + " " + x + " " + y);
+        // System.out.println("PPT: " + this + " " + m_distanceParcourue + " " +
+        // distance_total);
     }
 
     public abstract void attaquer(Unite cible);

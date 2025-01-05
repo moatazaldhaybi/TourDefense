@@ -46,10 +46,10 @@ public class Position {
     }
 
     // Conversion d'une position réelle (pixels) en PositionCase
-    public static PositionCase toCase(Position position, double halfLengthCase) {
-        double caseSize = 2 * halfLengthCase;
-        int row = (int) (position.getY() / caseSize);
-        int col = (int) (position.getX() / caseSize);
+    public static PositionCase toCase(Position p, double halfLengthCase) {
+        int col = (int) ((p.getX() - (350.0 - 350.0)) / (2 * halfLengthCase));
+        int row = (int) ((350.0 + 350.0 - p.getY()) / (2 * halfLengthCase));
         return new PositionCase(row, col);
     }
+    
 }

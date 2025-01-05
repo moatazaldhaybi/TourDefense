@@ -17,8 +17,8 @@ public class UniteGraphique {
     public static void dessinerEnnemi(double x, double y, double rayon, Color couleur) {
       StdDraw . setPenColor ( couleur );
       StdDraw . filledCircle ( x , y , rayon );
-      StdDraw . setPenColor ( new Color (192 , 192 ,192) );
-      StdDraw . filledCircle ( x , y , rayon );
+      /*StdDraw . setPenColor ( new Color (192 , 192 ,192) );
+      StdDraw . filledCircle ( x , y , rayon );*/
   }
 
     // Méthode pour dessiner une tour

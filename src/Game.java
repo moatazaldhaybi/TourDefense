@@ -9,13 +9,14 @@ public class Game {
     private Forme forme;
     private InterfaceGraphique interfaceGraphique;
     private List<Ennemis> ennemisActifs;
-    private List<Case> m_chemin;
+    private Joueur joueur;
 
     public Game() throws IOException {
         gameRunning = true;
         forme = new Forme(".\\resources\\resources\\maps\\10-10.mtp"); // Initialise la carte
+        joueur = new Joueur(forme);
         ennemisActifs = new ArrayList<>(); // Liste des ennemis actuellement sur le chemin
-        interfaceGraphique = new InterfaceGraphique(forme, new UniteGraphique(ennemisActifs));
+        interfaceGraphique = new InterfaceGraphique(forme, new UniteGraphique(ennemisActifs), joueur);
         wave = new Wave(forme); // Initialise les vagues
     }
 
@@ -31,10 +32,10 @@ public class Game {
         long previousTime = System . currentTimeMillis () ;
         while (gameRunning) {
             long currentTime = System.currentTimeMillis();
-            m_elapsedTimeSec  = (currentTime - startTime) / 1000.0;
+            m_elapsedTimeSec  = (currentTime - startTime);
             double deltaTimeSec = ( double )( currentTime - previousTime ) /1000;
             previousTime = currentTime ;
-
+            //System.out.println("TC : " + deltaTimeSec);
             update(deltaTimeSec);
         }
 
@@ -42,40 +43,65 @@ public class Game {
     }
 
     private void init() throws IOException {
-        m_chemin = forme.calculerChemin();
-        System.out.println(m_chemin);
-        wave.creerVague(".\\resources\\resources\\waves\\waveMinion.wve"); // Charge un fichier de vague
+        forme.calculerChemin();
+        //System.out.println(m_chemin);
+        wave.creerVague(".\\resources\\resources\\waves\\waveMinion.wve"); // Charge `  un fichier de vague
         interfaceGraphique.fenetre();
-        System.out.println("Vague chargée avec succès.");
+        interfaceGraphique.afficherZoneMap();
+        interfaceGraphique.afficherZoneLevel();
+        //System.out.println("Vague chargée avec succès.");
     }
 private void update(double iDeltaTimeSec) {
+    long timeBeforeEN = System.currentTimeMillis();
     wave.getVague().entrySet().removeIf(entry -> {
-        double spawnTime = entry.getKey().getSecondes();
-        if (Math.round(spawnTime * 10) / 10.0 == Math.round(m_elapsedTimeSec * 10) / 10.0) {
+        double spawnTime = entry.getKey().getSecondes()*1000;
+        //System.out.println("a : "+(int)(spawnTime));
+        //System.out.println("b : "+(int)(m_elapsedTimeSec));
+        if ((int)(m_elapsedTimeSec)>=(int)(spawnTime)) {
             ennemisActifs.add(entry.getValue());
             interfaceGraphique.setAffichageUnite(new UniteGraphique(ennemisActifs));
             //interfaceGraphique.afficherEnemisAuSpawn(wave, m_elapsedTimeSec);
-            System.out.println("Ennemi ajouté : " + entry.getValue().getName());
+            /*System.out.println("Ennemi ajouté : " + m_elapsedTimeSec + " " + spawnTime);
+            for (Ennemis en : ennemisActifs) {
+                System.out.println("Pose E: " + en.getPosition().getX() + " " + en.getPosition().getY());
+            }*/
             return true;
         }
         return false;
     });
 
-    //System.out.println(ennemisActifs);
+    //System.out.println(ennemisActifs.size());
+    //if(!ennemisActifs.isEmpty()){
+    //}
 
     // Update Enemie positions
-    for (Ennemis ennemi : new ArrayList<>(ennemisActifs)) {
-        //System.out.println("Position actuelle de l'ennemi : "+ennemi.getPosition());
-        ennemi.avancer(iDeltaTimeSec, m_chemin, ennemi.getSpeed());
-        //System.out.println("Position apr de l'ennemi : "+ennemi.getPosition());
-
-        if (ennemi.getPosition().equals(forme.trouverBase().getPosition())) {
-            ennemisActifs.remove(ennemi);
+    for (int i = ennemisActifs.size() - 1; i >= 0; i--) {
+        Ennemis ennemi = ennemisActifs.get(i);
+    
+        //System.out.println("M : " + Position.toCase(ennemi.getPosition(), forme.getHalfLenghtCase()));
+        //System.out.println("B : " + forme.trouverBase().getPosition());
+    
+        // Vérifie si l'ennemi a atteint la base
+        if (Position.toCase(ennemi.getPosition(), forme.getHalfLenghtCase()).getRow() == forme.trouverBase().getPosition().getRow() &&
+            Position.toCase(ennemi.getPosition(), forme.getHalfLenghtCase()).getCol() == forme.trouverBase().getPosition().getCol()) {
+            
+            ennemisActifs.remove(i); // Supprime l'ennemi
+            joueur.ennemisBase(ennemi);
             System.out.println("Un ennemi a atteint la base !");
         }
+    
+        // Met à jour la position de l'ennemi
+        ennemi.avancer(iDeltaTimeSec, m_chemin, ennemi.getSpeed());
     }
+    long timeAfterEN = System.currentTimeMillis();
+    long elapsedTime = timeAfterEN - timeBeforeEN;
+    //System.out.println("ET EN " + elapsedTime);
     // Update graphics
+    timeBeforeEN = System.currentTimeMillis();
     render(m_elapsedTimeSec);
+    timeAfterEN = System.currentTimeMillis();
+    elapsedTime = timeAfterEN - timeBeforeEN;
+    //System.out.println("ET RENDER " + elapsedTime);
 }
 private void render(double iElapsedTimeSec) {
     interfaceGraphique.afficherZones(wave);

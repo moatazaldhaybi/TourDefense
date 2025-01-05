@@ -1,10 +1,12 @@
 public class Joueur {
   private int pointsDeVie; // Points de vie du joueur
   private int argent;      // Pièces d'or du joueur
+  private Forme forme;
 
-  public Joueur() {
+  public Joueur(Forme forme) {
       this.pointsDeVie = 100; // Commence avec 100 points de vie
       this.argent = 50;       // Commence avec 50 pièces d'or
+      this.forme=forme;
   }
 
   // Getter et Setter pour les points de vie
@@ -54,6 +56,13 @@ public class Joueur {
   // Vérifie si le joueur a perdu
   public boolean estPerdu() {
       return pointsDeVie <= 0;
+  }
+
+  public void ennemisBase(Ennemis enemi){
+    if (Position.toCase(enemi.getPosition(), forme.getHalfLenghtCase()).comparePosition(forme.trouverBase().getPosition())){
+        pointsDeVie-=enemi.getAtk();
+        //setPointsDeVie(pointsDeVie);
+    }
   }
 
   @Override

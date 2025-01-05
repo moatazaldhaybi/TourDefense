@@ -10,14 +10,16 @@ public class InterfaceGraphique {
   
   private Forme forme;
   UniteGraphique affichageUnite;
+  private Joueur joueur;
 
   public void setAffichageUnite(UniteGraphique affichageUnite) {
     this.affichageUnite = affichageUnite;
   }
 
-  public InterfaceGraphique(Forme forme, UniteGraphique affichageUnite) {
+  public InterfaceGraphique(Forme forme, UniteGraphique affichageUnite, Joueur joueur) {
     this.forme = forme;
     this.affichageUnite = affichageUnite;
+    this.joueur = joueur;
 
   }
 
@@ -25,6 +27,14 @@ public class InterfaceGraphique {
     fenetre(); // Configure la fenêtre
     afficherZones(wave); // Appelle l'affichage des zones dès l'instanciation
     interagirAvecLaSouris();
+  }
+
+  public void disparus(){
+    fenetre();
+    afficherZoneMap();
+    afficherZoneLevel();
+    afficherZonePlayer();
+    afficherZoneStore();
   }
 
   public void fenetre() {
@@ -35,8 +45,8 @@ public class InterfaceGraphique {
   }
 
   public void afficherZones(Wave wave) {
-    afficherZoneMap();
-    afficherZoneLevel();
+    //afficherZoneMap();
+    //afficherZoneLevel();
     afficherZonePlayer();
     afficherZoneStore();
     // testAff();
@@ -67,7 +77,7 @@ public class InterfaceGraphique {
     }
   }
 
-  private void afficherZoneMap() {
+  public void afficherZoneMap() {
 
     double centerX = 350.0;
     double centerY = 350.0;
@@ -123,7 +133,7 @@ public class InterfaceGraphique {
     }
   }
 
-  private void afficherZoneLevel() {
+  public void afficherZoneLevel() {
     double centerX = 856;
     double centerY = 688;
     double halfWidth = 144;
@@ -137,15 +147,19 @@ public class InterfaceGraphique {
     StdDraw.textLeft(centerX - halfWidth + 10, centerY, "Level: " + forme.getLevel() + "/3");
   }
 
-  private void afficherZonePlayer() {
+  public void afficherZonePlayer() {
     double centerX = 856;
     double centerY = 641;
     double halfWidth = 144;
     double halfHeight = 25;
 
+    StdDraw.setPenColor(Color.WHITE);
+    StdDraw.filledRectangle(centerX, centerY, halfWidth, halfHeight);
     // Dessiner le rectangle représentant la Zone Player
     StdDraw.setPenColor(Color.BLACK);
     StdDraw.rectangle(centerX, centerY, halfWidth, halfHeight);
+    
+
 
     // Dessiner une pièce (cercle doré) plus à gauche
     double pieceRadius = 20; // Rayon de la pièce
@@ -154,6 +168,11 @@ public class InterfaceGraphique {
     StdDraw.filledCircle(pieceX, centerY, pieceRadius);
     StdDraw.setPenColor(new Color(192, 192, 192)); // Argent
     StdDraw.filledCircle(pieceX, centerY, 0.7 * pieceRadius);
+    StdDraw.textRight(centerX + halfWidth - 10, centerY, "50");
+    StdDraw.setPenColor(Color.BLACK);
+    StdDraw.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16));
+    StdDraw.textRight(centerX + halfWidth - 50, centerY, ""+joueur.getPointsDeVie());
+    StdDraw.textLeft(centerX - halfWidth + 50, centerY, ""+joueur.getArgent());
 
     // Dessiner un cœur (rouge) plus à droite
     double heartX = centerX + halfWidth - 30; // Ajuster pour placer plus à droite
@@ -301,6 +320,13 @@ public class InterfaceGraphique {
    * }
    */
   public void afficherCheminEnnemis(Wave wave, List<Ennemis> ennemisActifs) {
+    List<Case> chemin = forme.getChemin();
+    for (Case c : chemin) {
+      StdDraw.setPenColor(getCouleur(c.getType()));
+      StdDraw.filledSquare(Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getX(), Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getY(), forme.getHalfLenghtCase());
+      StdDraw.setPenColor(Color.BLACK);
+      StdDraw.square(Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getX(), Position.fromCase(c.getPosition(), forme.getHalfLenghtCase()).getY(), forme.getHalfLenghtCase());
+    }
     for (Ennemis ennemi : ennemisActifs) {
       // Obtenir la position actuelle de l'ennemi
       Position currentPosition = ennemi.getPosition();
@@ -309,7 +335,7 @@ public class InterfaceGraphique {
       affichageUnite.dessinerEnnemi(
           currentPosition.getX(),
           currentPosition.getY(),
-          forme.getHalfLenghtCase() / 2,
+          forme.getHalfLenghtCase() / 5,
           ennemi.getColor());
     }
 
